@@ -141,6 +141,9 @@ func main() {
 
 // "run" runs (starts) a container & "exec" executes a command in running container
 
+// To execute as a root user (or any other) use -u
+// > docker exec -it -u root my-container sh
+
 // To stop container
 // > docker stop my-container
 
@@ -248,3 +251,17 @@ func main() {
 
 // Any changes in the Host directory (pwd) will be immediately reflected in the Container.
 // Example: Hot-Reloading in React can be achieved via this.
+
+// To only see ids of images add -q
+// > docker images ls -q
+
+// This can be used as shortcut to delete all images at once
+// > docker image rm $(docker image ls -q)
+
+// You'll get error if some of these images are used in running or even stopped containers.
+
+// Remove all containers first (use -f for force remove running containers)
+// > docker container rm -f $(docker container ls -aq)
+
+// To kill all containers
+// > docker container kill $(docker ps -aq)

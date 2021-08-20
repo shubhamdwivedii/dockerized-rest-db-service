@@ -1,0 +1,93 @@
+version: "3.8" # Wrap in quotes as docker expects version number to be a string. Without quotes it will be a number. 
+
+services: # For each service we need to tell docker how to build image for that service. 
+  # frontend:
+  backend: 
+    build: ./ # This is where we have our Dockerfile (for backend)
+    ports: # For port mappings 
+      - 3000:8080 
+    environment: # To set env variables 
+      # - DB_URL=mongodb://db/testdb # Alternate syntax 
+      DB_URL: mongodb://database/testdb 
+      # "database" in url will be mapped to database container's ip address inside the Docker Network.
+
+    # volumes: # For publishing changes in development. Host directoy can be mapped to container directory here 
+        # - ./server:/app/server 
+        # No need for $(pwd), can use . for current directory. 
+
+    # will override default command in Dockerfile 
+    # command: echo hello && npm start
+
+    # command can also run shell scripts (usually entrypoint scripts)    
+    # command: ./docker-entrypoint.sh 
+    command: sh docker-entrypoint.sh 
+    # This can be used for waiting until DB is initialized before starting server. 
+
+  database: 
+    # For DB we won't create a new Image, we pull one instead. 
+    image: mysql:8.0
+    ports: 
+      - 4000:3306
+    volumes: # We can map volumes to a directory inside the container. 
+      - testdb:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: admin 
+
+  # Images build above can be reused for testing 
+  backend-test: # Will reuse backend image 
+    image: dockerized-rest-db-service_backend 
+    # image names are prefixed with directory name by default. 
+    command: go test  
+
+# Volumes need to be defined first
+volumes:
+  testdb: # no value is needed. This is correct syntax
+
+# TO build images that need building (eg. only backend in this file)
+# > docker-compose build
+
+# Check if images created 
+# > docker images 
+
+# Image names are prefixed with name of the directory where docker-compose.yml is located.
+
+# To start all containers
+# > docker-compose up 
+
+# If any image is not build at this time, docker-compose up will automatically build it. 
+# This will also download any image that needs pulled (eg. only mysql in this file)
+
+# To force rebuild 
+# > docker-compose up --build
+
+# To bring down containers (stop and remove)
+# > docker-compose down 
+
+# This will not delete any Volumes. Check with 
+# > docker volume ls
+
+# Remove volume with:
+# > docker volume rm my_volume
+
+# DOCKER NETWORKING #############
+# docker-compose automatically creates a network between all containers for communication. 
+
+# To see these networks 
+# > docker network ls
+
+# Docker comes with an embedded DNS Server. 
+# Each Container has a DNS resolver. DNS resolver asks DNS Server for container's ip address. 
+
+# To ping one container from another (example for this file backend id 8e4)
+# > docker exec -it 8e4 sh 
+# $ ping database 
+# OR 
+# > docker exec -it -u root 8c5 sh 
+# $ ping backend 
+
+# To view logs across all containers in network 
+# > docker-compose logs 
+
+# This has same options (follow, timestamp) as docker logs. 
+# > docker-compose logs -f -t 
+
