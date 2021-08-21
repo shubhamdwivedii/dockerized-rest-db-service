@@ -1,0 +1,25 @@
+# For multistage build (used in production mostly)
+
+FROM golang:alpine AS build-stage 
+COPY . /app 
+WORKDIR /app 
+RUN go build
+
+# Second stage (production)
+FROM nginx:1.12-alpine AS production-stage 
+# here "AS production-stage" is optional (we won't use it)
+
+# We can copy files from build stage (eg. binary build)
+COPY --from=build-stage dockerized-rest-db-service /server 
+# Entire directory can be copied too.
+
+EXPOSE 8080
+
+ENTRYPOINT ["./server/dockerized-rest-db-service"]
+# We use ENTRYPOINT becouse we want this command to be executed everytime we start the image. 
+
+# TO build image using this Dockerfile.prod 
+
+# > docker build -t go-server -f Dockerfile.prod .
+
+# -f means file ie: Dockerfile 

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -191,7 +191,9 @@ func newProductHandler() *ProductHandler { // Kinda like a constructor // BASIC 
 	}
 }
 
-func main() {
+func RunServer() {
+	// SQL_CONNECTION := "root:admin@tcp(127.0.0.1:3306)/test"
+
 	port := ":8080"
 	ph := newProductHandler()
 	http.Handle("/products", ph)

@@ -4,6 +4,8 @@ services: # For each service we need to tell docker how to build image for that 
   # frontend:
   backend: 
     build: ./ # This is where we have our Dockerfile (for backend)
+    # build can be expanded into: "context" and "dockerfile" (see docker-compose.prod.yml)
+    
     ports: # For port mappings 
       - 3000:8080 
     environment: # To set env variables 

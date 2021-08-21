@@ -2,8 +2,12 @@ package main
 
 import "fmt"
 
+// import "./server" // Avoid relative path imports
+import "github.com/shubhamdwivedii/dockerized-rest-db-service/server"
+
 func main() {
 	fmt.Println("Hello Docker!!")
+	server.RunServer()
 }
 
 // To build image
