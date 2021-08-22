@@ -284,7 +284,7 @@ func initDB() *sql.DB {
 		fmt.Println("Connected To DB...")
 	}
 
-	_,err = db.Exec("USE " + DATABASE_NAME)
+	_,err = db.Exec("USE " + DATABASE_NAME) // Replace with CREATE IF NOT EXISTS later. 
 	if err != nil {
 		fmt.Println("DATABASE NOT EXISTS", DATABASE_NAME, err.Error())
 		_,err = db.Exec("CREATE DATABASE "+ DATABASE_NAME)
@@ -337,7 +337,6 @@ func RunServer() {
 
 	defer db.Close() // TO make sure DB connection is closed properly
 
-	// var db *sql.DB
 	port := ":8080"
 	ph := newProductHandler(db)
 	http.Handle("/products", ph)

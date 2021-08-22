@@ -1,5 +1,7 @@
 # For multistage build (used in production mostly)
 
+# Create separate docker-compose.prod.yml to use this. 
+
 FROM golang:alpine AS build-stage 
 COPY . /app 
 WORKDIR /app 
