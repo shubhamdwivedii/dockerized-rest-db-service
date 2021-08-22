@@ -115,17 +115,14 @@ func (ph *ProductHandler) post(w http.ResponseWriter, r *http.Request) {
 	// Adding product to sql table 
 	create_product, err := ph.db.Prepare("INSERT INTO products (name, price) VALUES (?, ?)")
 	if err != nil {
-		fmt.Println("Errrr", err.Error())
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return 
 	} 
 	_, err = create_product.Exec(product.Name, product.Price)
 	if err != nil {
-		fmt.Println("Error::", err.Error())
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return 
 	} 
-	fmt.Println("Product created", product)
 	respondWithJSON(w, http.StatusCreated, product)
 }
 
@@ -154,8 +151,6 @@ func (ph *ProductHandler) put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Updating product", product)
-
 	// Updating product 
 	defer ph.Unlock()
 	ph.Lock()
@@ -179,19 +174,15 @@ func (ph *ProductHandler) put(w http.ResponseWriter, r *http.Request) {
 	// Updating Product
 	update_product, err := ph.db.Prepare(`UPDATE products SET name = ?, price = ? WHERE id = ?`)
 	if err != nil {
-		fmt.Println("Errrr", err.Error())
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return 
 	} 
 	
 	_, err = update_product.Exec(origP.Name, origP.Price, origP.Id)
 	if err != nil {
-		fmt.Println("Error::", err.Error())
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return 
 	} 
-	
-	fmt.Println("Product updated", origP)
 	respondWithJSON(w, http.StatusCreated, origP)
 }
 
@@ -217,26 +208,23 @@ func (ph *ProductHandler) delete(w http.ResponseWriter, r *http.Request) {
 	// deleting product 
 	delete_product, err := ph.db.Prepare(`DELETE FROM products WHERE id = ?`)
 	if err != nil {
-		fmt.Println("Errrr", err.Error())
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return 
 	} 
 	
 	_, err = delete_product.Exec(origP.Id)
 	if err != nil {
-		fmt.Println("Error::", err.Error())
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return 
 	} 
 	
-	fmt.Println("Product deleted", origP)
 	respondWithJSON(w, http.StatusNoContent, "")   // It is convention to not return anything for DELETE request
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, data interface{}) { // empty interface is like Any in JS, try avoid using this.
 	response, err := json.Marshal(data) // returns a []byte (json in string)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Error Marshalling Response Data:", err.Error())
 	}
 	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(code) // writes status code (eg. 200 OK)
@@ -270,9 +258,6 @@ func initDB() *sql.DB {
 	
 	CONNECTION_URL := URLS[0]
 	DATABASE_NAME := URLS[1]
-
-	fmt.Println("Connection:", CONNECTION_URL)
-	fmt.Println("Database:", DATABASE_NAME)
 
 	// Add sql driver by: "go get github.com/go-sql-driver/mysql"
 	fmt.Println("Drivers:", sql.Drivers())
