@@ -8,9 +8,11 @@ services: # For each service we need to tell docker how to build image for that 
     
     ports: # For port mappings 
       - 3000:8080 
+      # hostPort:containerPort
+
     environment: # To set env variables 
       # - DB_URL=mongodb://db/testdb # Alternate syntax 
-      DB_URL: mongodb://database/testdb 
+      DB_URL: root:admin@tcp(database)/dockertest
       # "database" in url will be mapped to database container's ip address inside the Docker Network.
 
     # volumes: # For publishing changes in development. Host directoy can be mapped to container directory here 
@@ -25,15 +27,23 @@ services: # For each service we need to tell docker how to build image for that 
     command: sh docker-entrypoint.sh 
     # This can be used for waiting until DB is initialized before starting server. 
 
+    # This will restart service everytime its stopped (due some error etc.)
+    # restart: unless-stopped
   database: 
     # For DB we won't create a new Image, we pull one instead. 
-    image: mysql:8.0
+    image: mysql
     ports: 
-      - 4000:3306
+      - 4000:8080
+      # host:container port 
+
     volumes: # We can map volumes to a directory inside the container. 
       - testdb:/var/lib/mysql
+    
     environment: 
       MYSQL_ROOT_PASSWORD: admin 
+    
+    command: --default-authentication-plugin=mysql_native_password 
+    # With this mysql will take password from MYSQL_ROOT_PASSWORD env variable.  
 
   # Images build above can be reused for testing 
   backend-test: # Will reuse backend image 

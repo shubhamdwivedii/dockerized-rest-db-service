@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"log"
 	"net/http"
 	"database/sql" 
@@ -262,7 +263,8 @@ func idFromUrl(r *http.Request) (int, error) {
 }
 
 func initDB() *sql.DB {
-	DB_URL := "root:admin@tcp(127.0.0.1:3306)/test"
+	DB_URL := os.Getenv("DB_URL") 
+	//"root:admin@tcp(127.0.0.1:3306)/test"
 
 	URLS := strings.Split(DB_URL, "/")
 	
@@ -290,11 +292,14 @@ func initDB() *sql.DB {
 			log.Fatal("Error: Creating Database", err.Error())
 		} else {
 			fmt.Println("Database Created Successfully...")
+			_,err = db.Exec("USE " + DATABASE_NAME)
+			if err != nil {
+				log.Fatal("Error: Using Newly Created Database...")
+			}
 		}
 	} else {
 		fmt.Println("Database found...")
 	}
-
 	return db 
 }
 
@@ -332,6 +337,7 @@ func RunServer() {
 
 	defer db.Close() // TO make sure DB connection is closed properly
 
+	// var db *sql.DB
 	port := ":8080"
 	ph := newProductHandler(db)
 	http.Handle("/products", ph)

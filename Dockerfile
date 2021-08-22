@@ -56,7 +56,7 @@ EXPOSE 8080
 
 # To avoid specifying run command everytime we run contianer, use CMD 
 # With CMD we can supply a default command to be executed. 
-CMD go run ./server/server.go
+CMD go run main.go
 # Now we can start container by simply:
 # > docker run go-docker 
 
