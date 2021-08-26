@@ -5,7 +5,10 @@ services: # For each service we need to tell docker how to build image for that 
   backend: 
     build: ./ # This is where we have our Dockerfile (for backend)
     # build can be expanded into: "context" and "dockerfile" (see docker-compose.prod.yml)
-    
+    # build: 
+      # context: ./ # path of Dockerfile 
+      # dockerfile: Dockerfile.prod
+
     ports: # For port mappings 
       - 3000:8080 
       # hostPort:containerPort
@@ -24,11 +27,19 @@ services: # For each service we need to tell docker how to build image for that 
 
     # command can also run shell scripts (usually entrypoint scripts)    
     # command: ./docker-entrypoint.sh 
-    command: sh docker-entrypoint.sh 
+    # command: sh docker-entrypoint.sh 
     # This can be used for waiting until DB is initialized before starting server. 
 
-    # This will restart service everytime its stopped (due some error etc.)
+    # This will restart service everytime its crashed(stopped) (due some error etc.)
     # restart: unless-stopped
+
+    # always = always restart the container 
+    # on-failure = restart when crashes 
+    # unless-stopped = restart when stopped manually
+
+    # default is restart: no 
+    # other options: always, on-failure, unless-stopped
+
   database: 
     # For DB we won't create a new Image, we pull one instead. 
     image: mysql
